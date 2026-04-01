@@ -26,7 +26,6 @@ const CreateCourse = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [lastRefreshLabel, setLastRefreshLabel] = useState("Not synced yet");
 
   const coursesQuery = useQuery({
     queryKey: ["courses"],
@@ -40,7 +39,6 @@ const CreateCourse = () => {
       setErrorMessage("");
       setFormData(emptyForm);
       await queryClient.invalidateQueries({ queryKey: ["courses"] });
-      setLastRefreshLabel("Just now");
     },
     onError: (err) => {
       setErrorMessage(
@@ -59,7 +57,6 @@ const CreateCourse = () => {
       setFormData(emptyForm);
       setSelectedCourse(extractCourse(response.data));
       await queryClient.invalidateQueries({ queryKey: ["courses"] });
-      setLastRefreshLabel("Just now");
     },
     onError: (err) => {
       setErrorMessage(getApiErrorMessage(err, "Failed to update the course."));
@@ -78,7 +75,6 @@ const CreateCourse = () => {
         setFormData(emptyForm);
       }
       await queryClient.invalidateQueries({ queryKey: ["courses"] });
-      setLastRefreshLabel("Just now");
     },
     onError: (err) => {
       setErrorMessage(getApiErrorMessage(err, "Failed to delete the course."));
@@ -146,19 +142,6 @@ const CreateCourse = () => {
   const cancelEdit = () => {
     setEditingCourseId(null);
     setFormData(emptyForm);
-  };
-
-  const handleRefreshCourses = async () => {
-    setSuccessMessage("");
-    setErrorMessage("");
-
-    try {
-      await coursesQuery.refetch();
-      setLastRefreshLabel(new Date().toLocaleTimeString());
-      setSuccessMessage("Course catalog refreshed.");
-    } catch {
-      setErrorMessage("Unable to refresh courses right now.");
-    }
   };
 
   const courses = coursesQuery.data ?? [];
@@ -334,24 +317,13 @@ const CreateCourse = () => {
             </form>
 
             <div className="rounded-4xl border border-white/70 bg-white/85 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
-              <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-900">
-                    Course Catalog
-                  </h2>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Browse all courses and choose one to inspect, edit, or delete.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleRefreshCourses}
-                  className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                  disabled={coursesQuery.isFetching}
-                >
-                  {coursesQuery.isFetching ? "Refreshing..." : "Refresh"}
-                </button>
+              <div className="mb-5">
+                <h2 className="text-xl font-semibold text-slate-900">
+                  Course Catalog
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Browse all courses and choose one to inspect, edit, or delete.
+                </p>
               </div>
 
               <div className="mb-5">
@@ -362,9 +334,6 @@ const CreateCourse = () => {
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
                   placeholder="Search by course name, description, or ID"
                 />
-                <p className="mt-2 text-xs uppercase tracking-[0.18em] text-slate-400">
-                  Last sync: {lastRefreshLabel}
-                </p>
               </div>
 
               {coursesQuery.isLoading && (
