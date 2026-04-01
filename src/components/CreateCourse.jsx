@@ -145,6 +145,8 @@ const CreateCourse = () => {
 
   const courses = coursesQuery.data ?? [];
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  const totalCourses = courses.length;
+  const selectedCourseName = selectedCourse?.courseName || "None selected";
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#eff6ff_0%,#f8fafc_35%,#eef2ff_100%)] px-4 py-6 sm:px-6 lg:px-8">
@@ -176,6 +178,44 @@ const CreateCourse = () => {
             </button>
           </div>
         </header>
+
+        <section className="grid gap-4 md:grid-cols-3">
+          <article className="rounded-[1.75rem] border border-white/70 bg-white/85 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
+              Total Courses
+            </p>
+            <p className="mt-3 text-3xl font-semibold text-slate-900">
+              {totalCourses}
+            </p>
+            <p className="mt-2 text-sm text-slate-500">
+              Live catalog count from the backend service.
+            </p>
+          </article>
+
+          <article className="rounded-[1.75rem] border border-white/70 bg-white/85 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-700">
+              Form Mode
+            </p>
+            <p className="mt-3 text-3xl font-semibold text-slate-900">
+              {editingCourseId ? "Edit" : "Create"}
+            </p>
+            <p className="mt-2 text-sm text-slate-500">
+              The form automatically switches when you choose a course to edit.
+            </p>
+          </article>
+
+          <article className="rounded-[1.75rem] border border-white/70 bg-white/85 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-700">
+              Selected Course
+            </p>
+            <p className="mt-3 truncate text-2xl font-semibold text-slate-900">
+              {selectedCourseName}
+            </p>
+            <p className="mt-2 text-sm text-slate-500">
+              Details stay visible on the right for quick review.
+            </p>
+          </article>
+        </section>
 
         {(errorMessage || successMessage) && (
           <div
