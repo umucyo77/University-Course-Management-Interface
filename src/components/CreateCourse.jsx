@@ -1,19 +1,42 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { AuthContext } from "../context/authContext";
-import { getApiErrorMessage } from "../lib/api";
-import {
-  createCourse,
-  deleteCourse,
-  extractCourse,
-  fetchCourses,
-  updateCourse,
-} from "../lib/courseApi";
+
+const API_BASE_URL =
+  "https://student-management-system-backend.up.railway.app/api/courses";
 
 const emptyForm = {
   courseName: "",
   description: "",
+};
+
+const getAuthHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+});
+
+const normalizeCourse = (course) => ({
+  id: course?.id ?? course?._id ?? course?.courseId ?? "",
+  courseName: course?.courseName ?? course?.name ?? course?.title ?? "",
+  description: course?.description ?? course?.courseDescription ?? "",
+});
+
+const extractCourses = (payload) => {
+  const data = payload?.data ?? payload;
+
+  if (Array.isArray(data)) return data.map(normalizeCourse);
+  if (Array.isArray(data?.courses)) return data.courses.map(normalizeCourse);
+  if (Array.isArray(data?.data)) return data.data.map(normalizeCourse);
+
+  return [];
+};
+
+const extractCourse = (payload) => {
+  const data = payload?.data ?? payload;
+  const course = data?.course ?? data?.data ?? data;
+  return normalizeCourse(course);
 };
 
 const CreateCourse = () => {
@@ -28,11 +51,19 @@ const CreateCourse = () => {
 
   const coursesQuery = useQuery({
     queryKey: ["courses"],
-    queryFn: fetchCourses,
+    queryFn: async () => {
+      const response = await axios.get(API_BASE_URL, {
+        headers: getAuthHeaders(),
+      });
+      return extractCourses(response.data);
+    },
   });
 
   const createMutation = useMutation({
-    mutationFn: createCourse,
+    mutationFn: (courseData) =>
+      axios.post(API_BASE_URL, courseData, {
+        headers: getAuthHeaders(),
+      }),
     onSuccess: async () => {
       setSuccessMessage("Course created successfully.");
       setErrorMessage("");
@@ -40,15 +71,20 @@ const CreateCourse = () => {
       await queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
     onError: (err) => {
-      setErrorMessage(
-        getApiErrorMessage(err, "Failed to create course. Please try again.")
-      );
+      const message =
+        err?.response?.data?.message ??
+        err?.message ??
+        "Failed to create course. Please try again.";
+      setErrorMessage(message);
       setSuccessMessage("");
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, courseData }) => updateCourse(id, courseData),
+    mutationFn: ({ id, courseData }) =>
+      axios.put(`${API_BASE_URL}/${id}`, courseData, {
+        headers: getAuthHeaders(),
+      }),
     onSuccess: async (response) => {
       setSuccessMessage("Course updated successfully.");
       setErrorMessage("");
@@ -58,13 +94,20 @@ const CreateCourse = () => {
       await queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
     onError: (err) => {
-      setErrorMessage(getApiErrorMessage(err, "Failed to update the course."));
+      const message =
+        err?.response?.data?.message ??
+        err?.message ??
+        "Failed to update the course.";
+      setErrorMessage(message);
       setSuccessMessage("");
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteCourse,
+    mutationFn: (id) =>
+      axios.delete(`${API_BASE_URL}/${id}`, {
+        headers: getAuthHeaders(),
+      }),
     onSuccess: async (_, deletedId) => {
       setSuccessMessage("Course deleted successfully.");
       setErrorMessage("");
@@ -76,7 +119,11 @@ const CreateCourse = () => {
       await queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
     onError: (err) => {
-      setErrorMessage(getApiErrorMessage(err, "Failed to delete the course."));
+      const message =
+        err?.response?.data?.message ??
+        err?.message ??
+        "Failed to delete the course.";
+      setErrorMessage(message);
       setSuccessMessage("");
     },
   });
