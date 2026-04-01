@@ -16,6 +16,8 @@ const emptyForm = {
   description: "",
 };
 
+const MIN_DESCRIPTION_LENGTH = 10;
+
 const CreateCourse = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -27,6 +29,7 @@ const CreateCourse = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [lastRefreshLabel, setLastRefreshLabel] = useState("Not synced yet");
+  const [formError, setFormError] = useState("");
 
   const coursesQuery = useQuery({
     queryKey: ["courses"],
@@ -88,6 +91,7 @@ const CreateCourse = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    setFormError("");
     setFormData((current) => ({
       ...current,
       [name]: value,
@@ -98,11 +102,24 @@ const CreateCourse = () => {
     e.preventDefault();
     setSuccessMessage("");
     setErrorMessage("");
+    setFormError("");
 
     const payload = {
       courseName: formData.courseName.trim(),
       description: formData.description.trim(),
     };
+
+    if (!payload.courseName) {
+      setFormError("Course name is required.");
+      return;
+    }
+
+    if (payload.description.length < MIN_DESCRIPTION_LENGTH) {
+      setFormError(
+        `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters long.`
+      );
+      return;
+    }
 
     if (editingCourseId) {
       updateMutation.mutate({
@@ -124,6 +141,7 @@ const CreateCourse = () => {
     setSelectedCourse(course);
     setSuccessMessage("");
     setErrorMessage("");
+    setFormError("");
   };
 
   const handleDelete = (id) => {
@@ -146,6 +164,7 @@ const CreateCourse = () => {
   const cancelEdit = () => {
     setEditingCourseId(null);
     setFormData(emptyForm);
+    setFormError("");
   };
 
   const handleRefreshCourses = async () => {
@@ -301,6 +320,9 @@ const CreateCourse = () => {
                     onChange={handleChange}
                     required
                   />
+                  <span className="mt-2 block text-xs text-slate-400">
+                    Keep the name concise and recognizable for supervisors and students.
+                  </span>
                 </label>
 
                 <label className="block">
@@ -315,8 +337,20 @@ const CreateCourse = () => {
                     onChange={handleChange}
                     required
                   />
+                  <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
+                    <span>
+                      Minimum {MIN_DESCRIPTION_LENGTH} characters for a useful catalog description.
+                    </span>
+                    <span>{formData.description.trim().length} characters</span>
+                  </div>
                 </label>
               </div>
+
+              {formError && (
+                <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                  {formError}
+                </p>
+              )}
 
               <button
                 className="mt-6 w-full rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
