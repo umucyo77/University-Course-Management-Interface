@@ -196,7 +196,7 @@ const CreateCourse = () => {
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#eff6ff_0%,#f8fafc_35%,#eef2ff_100%)] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.12)] backdrop-blur">
+        <header className="rounded-4xl border border-white/70 bg-white/85 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.12)] backdrop-blur">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-sky-700">
@@ -238,7 +238,7 @@ const CreateCourse = () => {
         <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
             <form
-              className="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur"
+              className="rounded-4xl border border-white/70 bg-white/85 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur"
               onSubmit={handleSubmit}
             >
               <div className="mb-6 flex items-start justify-between gap-4">
@@ -308,7 +308,7 @@ const CreateCourse = () => {
               </button>
             </form>
 
-            <div className="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
+            <div className="rounded-4xl border border-white/70 bg-white/85 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
               <div className="mb-5">
                 <h2 className="text-xl font-semibold text-slate-900">
                   Course Catalog

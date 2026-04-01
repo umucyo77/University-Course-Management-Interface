@@ -80,7 +80,7 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#dbeafe_0%,#eff6ff_35%,#f8fafc_100%)] px-4 py-10">
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-[0_30px_80px_rgba(15,23,42,0.15)] backdrop-blur">
+      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl overflow-hidden rounded-4xl border border-white/70 bg-white/80 shadow-[0_30px_80px_rgba(15,23,42,0.15)] backdrop-blur">
         <section className="hidden w-1/2 flex-col justify-between bg-slate-900 px-10 py-12 text-white lg:flex">
           <div className="space-y-4">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
