@@ -5,18 +5,7 @@ import CreateCourse from './components/CreateCourse';
 import ProtectedRoute from './context/ProtectedRoute';
 import LoginPage from './components/LoginPage';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 30000,
-    },
-    mutations: {
-      retry: 0,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function App() {
   return (
