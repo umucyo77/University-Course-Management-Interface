@@ -23,6 +23,7 @@ const CreateCourse = () => {
   const [formData, setFormData] = useState(emptyForm);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [editingCourseId, setEditingCourseId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -144,6 +145,19 @@ const CreateCourse = () => {
   };
 
   const courses = coursesQuery.data ?? [];
+  const filteredCourses = courses.filter((course) => {
+    const keyword = searchTerm.trim().toLowerCase();
+
+    if (!keyword) {
+      return true;
+    }
+
+    return (
+      course.courseName.toLowerCase().includes(keyword) ||
+      course.description.toLowerCase().includes(keyword) ||
+      String(course.id).toLowerCase().includes(keyword)
+    );
+  });
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
   const totalCourses = courses.length;
   const selectedCourseName = selectedCourse?.courseName || "None selected";
@@ -312,6 +326,16 @@ const CreateCourse = () => {
                 </p>
               </div>
 
+              <div className="mb-5">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
+                  placeholder="Search by course name, description, or ID"
+                />
+              </div>
+
               {coursesQuery.isLoading && (
                 <p className="rounded-2xl bg-slate-50 px-4 py-6 text-sm text-slate-500">
                   Loading courses...
@@ -330,8 +354,16 @@ const CreateCourse = () => {
                 </p>
               )}
 
+              {!coursesQuery.isLoading &&
+                Boolean(courses.length) &&
+                !filteredCourses.length && (
+                  <p className="rounded-2xl bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                    No courses match your current search.
+                  </p>
+                )}
+
               <div className="space-y-4">
-                {courses.map((course) => (
+                {filteredCourses.map((course) => (
                   <article
                     key={course.id || `${course.courseName}-${course.description}`}
                     className="rounded-3xl border border-slate-200 bg-slate-50/80 p-5"
