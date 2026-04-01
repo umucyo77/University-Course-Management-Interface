@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { AuthContext } from "../context/authContext";
+import { apiClient, getApiErrorMessage } from "../lib/api";
 
 function decodeJwtPayload(token) {
   if (!token || typeof token !== "string") return null;
@@ -38,11 +38,7 @@ const LoginPage = () => {
 
   const mutation = useMutation({
     mutationFn: (loginData) =>
-      axios.post(
-        "https://student-management-system-backend.up.railway.app/api/auth/login",
-        loginData,
-        { headers: { "Content-Type": "application/json" } }
-      ),
+      apiClient.post("/auth/login", loginData),
     onSuccess: (res) => {
       setErrorMessage("");
       const token = res?.data?.accessToken ?? res?.data?.data?.accessToken;
@@ -65,12 +61,7 @@ const LoginPage = () => {
       setErrorMessage("Access denied: Not a Supervisor");
     },
     onError: (err) => {
-      const message =
-        err?.response?.data?.message ??
-        err?.response?.data?.error ??
-        err?.message ??
-        "Login failed";
-      setErrorMessage(message);
+      setErrorMessage(getApiErrorMessage(err, "Login failed"));
     },
   });
 
